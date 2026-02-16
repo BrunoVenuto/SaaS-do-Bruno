@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function AppHome() {
   const session = await getAuthSession();
@@ -20,10 +21,9 @@ export default async function AppHome() {
     <div className="container py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-extrabold">Área do Sistema</h1>
-        <form action="/api/app/logout" method="post">
-          <button className="btn btn-ghost" type="submit">Sair</button>
-        </form>
+        <LogoutButton />
       </div>
+
 
       <div className="mt-6 card">
         <div className="flex items-center justify-between gap-3 flex-wrap">
