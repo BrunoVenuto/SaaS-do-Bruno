@@ -2,12 +2,14 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getAuthSession } from "@/lib/auth";
 import { getActiveTenantId } from "@/lib/activeTenant";
+import { redirect } from "next/navigation";
 
 export default async function AgendaPage() {
   const session = await getAuthSession();
   if (!session?.user?.email) return null;
 
   const tenantId = getActiveTenantId();
+  if (!tenantId) return redirect("/app");
 
   const [professionals, services, upcoming] = await Promise.all([
     prisma.professional.findMany({ where: { tenantId, isActive: true }, orderBy: { name: "asc" } }),

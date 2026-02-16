@@ -21,7 +21,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const membership = await prisma.membership.findFirst({
         where: {
             tenantId: professional.tenantId,
-            userId: session.user.id,
+            userId: (session.user as any).id,
             role: { in: ["OWNER", "ADMIN"] }
         }
     });

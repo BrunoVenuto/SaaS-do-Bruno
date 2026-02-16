@@ -25,7 +25,7 @@ export default async function AvailabilityPage({ params }: { params: { id: strin
         where: {
             tenantId_userId: {
                 tenantId: professional.tenantId,
-                userId: session.user.id,
+                userId: (session.user as any).id,
             }
         }
     });

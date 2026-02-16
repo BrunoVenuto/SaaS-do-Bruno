@@ -2,12 +2,14 @@ import Link from "next/link";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getActiveTenantId } from "@/lib/activeTenant";
+import { redirect } from "next/navigation";
 
 export default async function FinancePage() {
   const session = await getAuthSession();
   if (!session?.user?.email) return null;
 
   const tenantId = getActiveTenantId();
+  if (!tenantId) return redirect("/app");
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), 1);
 
@@ -15,7 +17,7 @@ export default async function FinancePage() {
     prisma.transaction.aggregate({ where: { tenantId, type: "INCOME", occurredAt: { gte: start } }, _sum: { amountCents: true } }),
     prisma.transaction.aggregate({ where: { tenantId, type: "EXPENSE", occurredAt: { gte: start } }, _sum: { amountCents: true } }),
     prisma.appointment.findMany({
-      where: { tenantId, status: "CONFIRMED", startAt: { lte: new Date(now.getTime() + 7*24*60*60*1000) } },
+      where: { tenantId, status: "CONFIRMED", startAt: { lte: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) } },
       include: { customer: true, professional: true, service: true },
       orderBy: { startAt: "asc" },
       take: 10,
@@ -92,7 +94,7 @@ export default async function FinancePage() {
             <div key={t.id} className="py-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="badge">{t.type}</span>
-                <span className="font-semibold">R$ {(t.amountCents/100).toFixed(2).replace(".", ",")}</span>
+                <span className="font-semibold">R$ {(t.amountCents / 100).toFixed(2).replace(".", ",")}</span>
                 <span className="text-sm text-white/60">• {new Date(t.occurredAt).toLocaleString("pt-BR")}</span>
               </div>
             </div>

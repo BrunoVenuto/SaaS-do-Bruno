@@ -92,22 +92,22 @@ export default async function BookPage({ params }: { params: { slug: string } })
               </p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
 
-                {tenant.address && (
+                {(tenant as any).address && (
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 min-w-[2.5rem] rounded-full bg-white/10 flex items-center justify-center text-xl">📍</div>
                     <div>
                       <div className="font-bold text-white">Localização</div>
-                      <div className="text-sm">{tenant.address}</div>
+                      <div className="text-sm">{(tenant as any).address}</div>
                     </div>
                   </div>
                 )}
 
-                {tenant.phone && (
+                {(tenant as any).phone && (
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 min-w-[2.5rem] rounded-full bg-white/10 flex items-center justify-center text-xl">📞</div>
                     <div>
                       <div className="font-bold text-white">Contato</div>
-                      <div className="text-sm">{tenant.phone}</div>
+                      <div className="text-sm">{(tenant as any).phone}</div>
                     </div>
                   </div>
                 )}

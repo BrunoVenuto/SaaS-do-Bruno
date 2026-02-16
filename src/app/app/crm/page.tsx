@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getActiveTenantId } from "@/lib/activeTenant";
+import { redirect } from "next/navigation";
 
 function daysBetween(a: Date, b: Date) {
   return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
@@ -12,6 +13,7 @@ export default async function CRMPage() {
   if (!session?.user?.email) return null;
 
   const tenantId = getActiveTenantId();
+  if (!tenantId) return redirect("/app");
 
   const customers = await prisma.customer.findMany({
     where: { tenantId },

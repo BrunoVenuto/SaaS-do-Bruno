@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getActiveTenantId } from "@/lib/activeTenant";
+import { redirect } from "next/navigation";
 
 export default async function BarberPanel() {
   const session = await getAuthSession();
@@ -9,6 +10,7 @@ export default async function BarberPanel() {
   if (!email) return null;
 
   const tenantId = getActiveTenantId();
+  if (!tenantId) return redirect("/app");
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return null;
 
@@ -31,7 +33,7 @@ export default async function BarberPanel() {
 
   const [upcoming, commAgg] = await Promise.all([
     prisma.appointment.findMany({
-      where: { tenantId, professionalId: professional.id, status: "CONFIRMED", startAt: { gte: new Date(now.getTime() - 60*60*1000) } },
+      where: { tenantId, professionalId: professional.id, status: "CONFIRMED", startAt: { gte: new Date(now.getTime() - 60 * 60 * 1000) } },
       include: { customer: true, service: true },
       orderBy: { startAt: "asc" },
       take: 15,
