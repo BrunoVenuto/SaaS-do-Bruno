@@ -45,6 +45,7 @@ export default async function SettingsPage() {
                 <SettingsForm
                     tenantId={tenant.id}
                     initialName={tenant.name}
+                    initialSlug={tenant.slug || ""}
                     initialAddress={(tenant as any).address || ""}
                     initialPhone={(tenant as any).phone || ""}
                 />

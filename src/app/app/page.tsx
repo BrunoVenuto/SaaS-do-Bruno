@@ -41,7 +41,7 @@ export default async function AppHome() {
                 <input type="hidden" name="tenantId" value={m.tenantId} />
                 <button className="btn btn-primary" type="submit">{m.tenant.name}</button>
               </form>
-              <Link href={`/book/${m.tenantId}`} target="_blank" className="btn btn-ghost text-xs" title="Ver página pública">
+              <Link href={`/book/${m.tenant.slug || m.tenantId}`} target="_blank" className="btn btn-ghost text-xs" title="Ver página pública">
                 🔗 Ver Página
               </Link>
             </div>

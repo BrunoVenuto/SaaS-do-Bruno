@@ -7,17 +7,27 @@ import { useRouter } from "next/navigation";
 interface SettingsFormProps {
     tenantId: string;
     initialName: string;
+    initialSlug: string;
     initialAddress: string;
     initialPhone: string;
 }
 
-export default function SettingsForm({ tenantId, initialName, initialAddress, initialPhone }: SettingsFormProps) {
+export default function SettingsForm({ tenantId, initialName, initialSlug, initialAddress, initialPhone }: SettingsFormProps) {
     const router = useRouter();
     const [name, setName] = useState(initialName);
+    const [slug, setSlug] = useState(initialSlug);
     const [address, setAddress] = useState(initialAddress);
     const [phone, setPhone] = useState(initialPhone);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error", text: string } | null>(null);
+
+    const formatSlug = (val: string) => {
+        return val
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "")
+            .replace(/-+/g, "-");
+    };
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -28,15 +38,18 @@ export default function SettingsForm({ tenantId, initialName, initialAddress, in
             const res = await fetch("/api/settings/tenant", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ tenantId, name, address, phone }),
+                body: JSON.stringify({ tenantId, name, slug, address, phone }),
             });
 
-            if (!res.ok) throw new Error("Erro ao atualizar.");
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Erro ao atualizar.");
+            }
 
             setMessage({ type: "success", text: "Dados atualizados com sucesso!" });
             router.refresh();
-        } catch (error) {
-            setMessage({ type: "error", text: "Erro ao atualizar os dados." });
+        } catch (error: any) {
+            setMessage({ type: "error", text: error.message || "Erro ao atualizar os dados." });
         } finally {
             setLoading(false);
         }
@@ -52,6 +65,20 @@ export default function SettingsForm({ tenantId, initialName, initialAddress, in
                     onChange={e => setName(e.target.value)}
                     required
                 />
+            </div>
+
+            <div>
+                <label className="text-sm font-bold text-white/70">Link da Página (Slug)</label>
+                <div className="flex items-center gap-2 mt-1">
+                    <span className="text-white/40 text-sm">/book/</span>
+                    <input
+                        className="input flex-1"
+                        value={slug}
+                        onChange={e => setSlug(formatSlug(e.target.value))}
+                        placeholder="ex: minha-barbearia"
+                    />
+                </div>
+                <p className="text-xs text-white/40 mt-1">Este será o link público para seus clientes agendarem.</p>
             </div>
 
             <div>

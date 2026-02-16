@@ -9,10 +9,24 @@ export async function PATCH(req: Request) {
         if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const body = await req.json();
-        const { tenantId, name, address, phone } = body;
+        const { tenantId, name, slug, address, phone } = body;
 
         if (!tenantId || !name) {
             return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+        }
+
+        // Validate slug uniqueness if provided
+        if (slug) {
+            const existingSlug = await prisma.tenant.findFirst({
+                where: {
+                    slug: slug,
+                    NOT: { id: tenantId }
+                }
+            });
+
+            if (existingSlug) {
+                return NextResponse.json({ error: "Este link já está em uso por outra barbearia." }, { status: 400 });
+            }
         }
 
         // Verify ownership/admin rights
@@ -30,8 +44,9 @@ export async function PATCH(req: Request) {
         // Update Tenant
         await prisma.tenant.update({
             where: { id: tenantId },
-            data: { name, address, phone }
+            data: { name, slug, address, phone }
         });
+
 
         return NextResponse.json({ success: true });
 
