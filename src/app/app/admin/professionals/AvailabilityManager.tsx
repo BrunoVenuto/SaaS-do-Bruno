@@ -35,19 +35,27 @@ export default function AvailabilityManager({ professionalId, initialAvailabilit
     const handleSave = async () => {
         setLoading(true);
         try {
-            await fetch(`/api/admin/professionals/${professionalId}/availability`, {
+            const res = await fetch(`/api/admin/professionals/${professionalId}/availability`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ availability }),
             });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Erro ao salvar horários.");
+            }
+
             alert("Horários salvos com sucesso!");
             router.refresh();
-        } catch (error) {
-            alert("Erro ao salvar horários.");
+        } catch (error: any) {
+            console.error("Save availability error:", error);
+            alert(error.message || "Erro ao salvar horários.");
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="card">
