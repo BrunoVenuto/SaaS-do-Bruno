@@ -48,8 +48,11 @@ async function main() {
   });
 
 
-  const prof = await prisma.professional.create({
-    data: {
+  const prof = await prisma.professional.upsert({
+    where: { id: "seed-prof-id" }, // Using fixed ID for seed to ensure idempotency
+    update: {},
+    create: {
+      id: "seed-prof-id",
       tenantId: tenant.id,
       userId: user.id,
       name: "Admin (Barbeiro)",
@@ -58,12 +61,27 @@ async function main() {
     },
   });
 
-  const service = await prisma.service.create({
-    data: { tenantId: tenant.id, name: "Corte", durationMin: 30, priceCents: 5000 },
+  const service = await prisma.service.upsert({
+    where: { id: "seed-service-id" },
+    update: {},
+    create: {
+      id: "seed-service-id",
+      tenantId: tenant.id,
+      name: "Corte",
+      durationMin: 30,
+      priceCents: 5000
+    },
   });
 
-  const customer = await prisma.customer.create({
-    data: { tenantId: tenant.id, name: "Cliente Teste", phone: "+5511999999999", notes: "Gosta de degradê." },
+  const customer = await prisma.customer.upsert({
+    where: { tenantId_phone: { tenantId: tenant.id, phone: "+5511999999999" } },
+    update: {},
+    create: {
+      tenantId: tenant.id,
+      name: "Cliente Teste",
+      phone: "+5511999999999",
+      notes: "Gosta de degradê."
+    },
   });
 
   const start = new Date();
@@ -71,18 +89,26 @@ async function main() {
   start.setMinutes(0, 0, 0);
   const end = new Date(start.getTime() + 30 * 60 * 1000);
 
-  await prisma.appointment.create({
-    data: {
-      tenantId: tenant.id,
-      customerId: customer.id,
-      professionalId: prof.id,
-      serviceId: service.id,
-      startAt: start,
-      endAt: end,
-      status: "CONFIRMED",
-      source: "internal",
-    },
+  // For appointments, just check if one exists to avoid flooding
+  const existingAppt = await prisma.appointment.findFirst({
+    where: { tenantId: tenant.id, customerId: customer.id }
   });
+
+  if (!existingAppt) {
+    await prisma.appointment.create({
+      data: {
+        tenantId: tenant.id,
+        customerId: customer.id,
+        professionalId: prof.id,
+        serviceId: service.id,
+        startAt: start,
+        endAt: end,
+        status: "CONFIRMED",
+        source: "internal",
+      },
+    });
+  }
+
 
   console.log("Seed OK:");
   console.log("Login:", email, password);
