@@ -23,17 +23,28 @@ export const authOptions: NextAuthOptions = {
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
 
-        return { id: user.id, email: user.email, name: user.name ?? user.email };
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name ?? user.email,
+          isSuperAdmin: user.isSuperAdmin
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) (token as any).uid = (user as any).id;
+      if (user) {
+        (token as any).uid = (user as any).id;
+        (token as any).isSuperAdmin = (user as any).isSuperAdmin;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) (session.user as any).id = (token as any).uid;
+      if (session.user) {
+        (session.user as any).id = (token as any).uid;
+        (session.user as any).isSuperAdmin = (token as any).isSuperAdmin;
+      }
       return session;
     },
   },

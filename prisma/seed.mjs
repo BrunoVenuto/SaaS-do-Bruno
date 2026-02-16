@@ -10,8 +10,8 @@ async function main() {
 
   const user = await prisma.user.upsert({
     where: { email },
-    update: {},
-    create: { email, passwordHash, name: "Admin Demo" },
+    update: { isSuperAdmin: true },
+    create: { email, passwordHash, name: "Admin Demo", isSuperAdmin: true },
   });
 
   const tenant = await prisma.tenant.create({
@@ -42,7 +42,7 @@ async function main() {
 
   const start = new Date();
   start.setHours(start.getHours() + 2);
-  start.setMinutes(0,0,0);
+  start.setMinutes(0, 0, 0);
   const end = new Date(start.getTime() + 30 * 60 * 1000);
 
   await prisma.appointment.create({
