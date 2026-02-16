@@ -3,8 +3,16 @@ import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: Request) {
     try {
+        const { searchParams } = new URL(req.url);
+        const secret = searchParams.get("secret");
+
+        // Só permite se o segredo for igual ao NEXTAUTH_SECRET (que só o Bruno sabe)
+        if (!secret || secret !== process.env.NEXTAUTH_SECRET) {
+            return NextResponse.json({ error: "Acesso negado. Segredo inválido." }, { status: 403 });
+        }
+
         const session = await getAuthSession();
 
         if (!session?.user?.email) {
@@ -12,6 +20,7 @@ export async function GET() {
                 error: "Você precisa estar logado para usar esta rota de resgate."
             }, { status: 401 });
         }
+
 
         // Promover o usuário logado
         const user = await prisma.user.update({

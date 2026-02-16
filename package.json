@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "build": "prisma migrate deploy && prisma generate && next build",
+    "build": "prisma migrate deploy && prisma generate && npm run seed && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
