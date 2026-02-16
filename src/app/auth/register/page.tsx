@@ -10,7 +10,12 @@ export default function RegisterPage() {
 
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
+
+    // Barbershop Details
     const [barbershopName, setBarbershopName] = useState("");
+    const [barbershopAddress, setBarbershopAddress] = useState("");
+    const [barbershopPhone, setBarbershopPhone] = useState("");
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -26,7 +31,15 @@ export default function RegisterPage() {
             const res = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, phone, barbershopName, email, password }),
+                body: JSON.stringify({
+                    name,
+                    phone,
+                    barbershopName,
+                    barbershopAddress,
+                    barbershopPhone,
+                    email,
+                    password
+                }),
             });
 
             const data = await res.json();
@@ -76,13 +89,27 @@ export default function RegisterPage() {
                         <input className="input mt-1" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(31) 9..." required />
                     </div>
 
-                    <div>
-                        <label className="text-xs text-white/70">Nome da Barbearia</label>
-                        <input className="input mt-1" value={barbershopName} onChange={(e) => setBarbershopName(e.target.value)} required />
+                    <div className="pt-4 border-t border-white/10">
+                        <label className="text-xs text-brand-yellow font-bold uppercase tracking-wider mb-2 block">Dados da Barbearia</label>
+
+                        <div className="mb-3">
+                            <label className="text-xs text-white/70">Nome da Barbearia</label>
+                            <input className="input mt-1" value={barbershopName} onChange={(e) => setBarbershopName(e.target.value)} required />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="text-xs text-white/70">Endereço da Barbearia</label>
+                            <input className="input mt-1" value={barbershopAddress} onChange={(e) => setBarbershopAddress(e.target.value)} placeholder="Ex: Av. Principal, 100" />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="text-xs text-white/70">Telefone da Barbearia (Comercial)</label>
+                            <input className="input mt-1" value={barbershopPhone} onChange={(e) => setBarbershopPhone(e.target.value)} placeholder="(31) 3..." />
+                        </div>
                     </div>
 
-                    <div>
-                        <label className="text-xs text-white/70">Email</label>
+                    <div className="pt-4 border-t border-white/10">
+                        <label className="text-xs text-white/70">Email de Acesso</label>
                         <input className="input mt-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     </div>
                     <div>
@@ -90,11 +117,11 @@ export default function RegisterPage() {
                         <input className="input mt-1" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                     </div>
 
-                    <button className="btn btn-primary w-full" type="submit" disabled={loading}>
+                    <button className="btn btn-primary w-full mt-4" type="submit" disabled={loading}>
                         {loading ? "Criando conta..." : "Criar Conta"}
                     </button>
 
-                    {error && <div className="text-sm text-red-400">{error}</div>}
+                    {error && <div className="text-sm text-red-400 text-center">{error}</div>}
                 </form>
 
                 <div className="mt-4 text-sm text-white/70">

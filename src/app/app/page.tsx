@@ -74,6 +74,10 @@ export default async function AppHome() {
           <div className="text-lg font-bold">CRM</div>
           <div className="text-sm text-white/70">Histórico + reativação</div>
         </Link>
+        <Link className="card hover:border-brand-yellow/40 transition" href="/app/settings">
+          <div className="text-lg font-bold">Configurações</div>
+          <div className="text-sm text-white/70">Dados da Barbearia</div>
+        </Link>
       </div>
     </div>
   );

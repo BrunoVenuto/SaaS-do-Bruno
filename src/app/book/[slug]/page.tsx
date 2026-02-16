@@ -91,15 +91,29 @@ export default async function BookPage({ params }: { params: { slug: string } })
                 Nosso ambiente foi preparado para você relaxar e sair com o visual renovado.
               </p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-xl">📍</div>
-                  <div>
-                    <div className="font-bold text-white">Localização</div>
-                    <div className="text-sm">Rua Exemplo, 123 - Centro</div>
+
+                {tenant.address && (
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 min-w-[2.5rem] rounded-full bg-white/10 flex items-center justify-center text-xl">📍</div>
+                    <div>
+                      <div className="font-bold text-white">Localização</div>
+                      <div className="text-sm">{tenant.address}</div>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {tenant.phone && (
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 min-w-[2.5rem] rounded-full bg-white/10 flex items-center justify-center text-xl">📞</div>
+                    <div>
+                      <div className="font-bold text-white">Contato</div>
+                      <div className="text-sm">{tenant.phone}</div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-xl">🕒</div>
+                  <div className="h-10 w-10 min-w-[2.5rem] rounded-full bg-white/10 flex items-center justify-center text-xl">🕒</div>
                   <div>
                     <div className="font-bold text-white">Horário</div>
                     <div className="text-sm">Seg - Sáb: 09h às 20h</div>

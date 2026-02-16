@@ -37,6 +37,8 @@ model Tenant {
   slug      String?  @unique
   timezone  String   @default("America/Sao_Paulo")
   isActive  Boolean  @default(true)
+  address   String?
+  phone     String?
   createdAt DateTime @default(now())
 
   memberships Membership[]

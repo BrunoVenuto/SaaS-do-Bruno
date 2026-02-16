@@ -9,15 +9,21 @@ import TenantActions from "./TenantActions";
 export default async function SysAdminPage() {
     const session = await getAuthSession();
 
-    if (!session?.user?.email) return redirect("/auth/login");
+    const email = session?.user?.email;
 
-    // Manual check for isSuperAdmin since the type might not be updated in the client yet
-    // We can query the user directly to be sure and safe
-    const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-    });
+    if (!email) return redirect("/auth/login");
 
-    // @ts-ignore - isSuperAdmin might not be in the type definition yet
+    console.log("SysAdmin Page - Logged User:", email);
+
+    // Verificação manual de isSuperAdmin, pois o tipo pode não estar atualizado no cliente ainda
+    // Podemos consultar o usuário diretamente para ter certeza e segurança
+    // Usamos queryRaw para garantir que o campo venha do banco mesmo se o client estiver desatualizado
+    const users: any[] = await prisma.$queryRaw`SELECT "isSuperAdmin" FROM "User" WHERE email = ${email} LIMIT 1`;
+    console.log("SysAdmin Page - Query Result:", users);
+
+    const user = users[0];
+
+    // @ts-ignore - isSuperAdmin pode não estar na definição de tipo ainda
     if (!user?.isSuperAdmin) {
         return (
             <div className="flex h-screen items-center justify-center">
@@ -26,7 +32,7 @@ export default async function SysAdminPage() {
         )
     }
 
-    // Use raw query to ensure we get isActive field even if Prisma Client is outdated
+    // Usar query bruta para garantir que pegamos o campo isActive mesmo se o Prisma Client estiver desatualizado
     const tenants: any[] = await prisma.$queryRaw`
         SELECT 
             t.id, 
@@ -39,18 +45,17 @@ export default async function SysAdminPage() {
         ORDER BY t."createdAt" DESC
     `;
 
-    // Mock Financials - Assuming R$ 39,90/mo per active tenant
-    // Mock Financials - Assuming R$ 39,90/mo per active tenant
+    // Dados Financeiros Simulados - Assumindo R$ 39,90/mês por barbearia ativa
     const activeTenantsCount = tenants.filter((t: any) => t.isActive).length;
     const mrr = activeTenantsCount * 39.90;
 
-    console.log("Tenants Data:", JSON.stringify(tenants, null, 2));
+    console.log("Dados das Barbearias:", JSON.stringify(tenants, null, 2));
 
     return (
         <div className="container py-10">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-extrabold">SaaS Super Admin</h1>
+                    <h1 className="text-3xl font-extrabold">Super Admin do SaaS</h1>
                     <p className="text-white/70">Visão geral do negócio BarberSaaS.</p>
                 </div>
                 <Link href="/app" className="btn btn-ghost">Voltar para App</Link>

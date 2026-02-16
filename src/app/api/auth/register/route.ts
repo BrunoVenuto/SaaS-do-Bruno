@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, password, barbershopName } = body;
+    const { name, email, password, barbershopName, barbershopAddress, barbershopPhone, phone } = body;
 
     if (!name || !email || !password || !barbershopName) {
       return NextResponse.json({ error: "Todos os campos são obrigatórios." }, { status: 400 });
@@ -40,6 +40,8 @@ export async function POST(req: Request) {
         data: {
           name: barbershopName,
           slug: slug,
+          address: barbershopAddress || null,
+          phone: barbershopPhone || null,
         },
       });
 
@@ -58,6 +60,7 @@ export async function POST(req: Request) {
           tenantId: tenant.id,
           userId: user.id,
           name: name,
+          phone: phone || null, // Saving user's personal phone (WhatsApp)
           isActive: true
         }
       });
