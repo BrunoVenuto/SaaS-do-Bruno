@@ -89,9 +89,9 @@ export default function BookingForm({ tenantId, services, professionals }: { ten
                     value={formData.serviceId}
                     onChange={handleChange}
                 >
-                    <option value="" disabled>Selecione um serviço</option>
+                    <option value="" disabled className="text-gray-500 bg-white">Selecione um serviço</option>
                     {services.map((s) => (
-                        <option key={s.id} value={s.id}>
+                        <option key={s.id} value={s.id} className="text-black bg-white">
                             {s.name} - R$ {(s.priceCents / 100).toFixed(0)}
                         </option>
                     ))}
@@ -107,8 +107,8 @@ export default function BookingForm({ tenantId, services, professionals }: { ten
                     value={formData.professionalId}
                     onChange={handleChange}
                 >
-                    <option value="" disabled>Selecione o barbeiro</option>
-                    {professionals.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    <option value="" disabled className="text-gray-500 bg-white">Selecione o barbeiro</option>
+                    {professionals.map((p) => <option key={p.id} value={p.id} className="text-black bg-white">{p.name}</option>)}
                 </select>
             </div>
 
